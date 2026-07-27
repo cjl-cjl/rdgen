@@ -561,7 +561,7 @@ jobs:
             -O "$ASSETS_DIR/logo.png" \
             "${{ env.logolink_url }}/get_png?filename=${{ env.logolink_file }}&uuid=${{ env.logolink_uuid }}"
 
-      - name: Create custom.txt file with configuration settings
+      - name: Create custom_.txt file with configuration settings
         shell: bash
         run: |
           BASE_DIR="flutter/build/macos/Build/Products/Release"
@@ -571,10 +571,10 @@ jobs:
             exit 1
           fi
           echo "Found app: $APP_DIR"
-          ASSETS_DIR="$APP_DIR/Contents/Frameworks/App.framework/Versions/Current/Resources/flutter_assets/assets"
-          mkdir -p "$ASSETS_DIR"
-          echo -n "${{ env.custom }}" > "$ASSETS_DIR/custom_.txt"
-          echo "custom_.txt written to $ASSETS_DIR/custom_.txt"
+          RESOURCES_DIR="$APP_DIR/Contents/Resources"
+          mkdir -p "$RESOURCES_DIR"
+          echo -n "${{ env.custom }}" > "$RESOURCES_DIR/custom_.txt"
+          echo "custom_.txt written to $RESOURCES_DIR/custom_.txt"
 
       - name: Sign macOS app bundle
         if: env.MACOS_P12_BASE64 != ''
