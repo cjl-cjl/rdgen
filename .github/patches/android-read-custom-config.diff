@@ -1,0 +1,22 @@
+diff --git a/flutter/lib/models/native_model.dart b/flutter/lib/models/native_model.dart
+index 0000000..1111111 100644
+--- a/flutter/lib/models/native_model.dart
++++ b/flutter/lib/models/native_model.dart
+@@ -212,7 +212,15 @@
+       await _ffiBind.mainDeviceId(id: id);
+       await _ffiBind.mainDeviceName(name: name);
+       await _ffiBind.mainSetHomeDir(home: _homeDir);
++      final customConfig = isAndroid
++          ? await (() async {
++              try {
++                return await rootBundle.loadString('assets/custom_.txt');
++              } catch (_) {
++                return '';
++              }
++            })()
++          : '';
+       await _ffiBind.mainInit(
+         appDir: _dir,
+-        customClientConfig: '',
++        customClientConfig: customConfig,
+       );
