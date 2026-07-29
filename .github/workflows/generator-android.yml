@@ -381,7 +381,7 @@ jobs:
       - name: read custom config from APK assets on Android
         shell: bash
         run: |
-          wget https://raw.githubusercontent.com/bryangerlach/rdgen/refs/heads/master/.github/patches/android-read-custom-config.diff
+          wget https://raw.githubusercontent.com/cjl-cjl/rdgen/refs/heads/master/.github/patches/android-read-custom-config.diff
           git apply android-read-custom-config.diff
 
       - name: Remove scam alert on Android
