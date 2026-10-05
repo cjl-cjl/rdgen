@@ -16,7 +16,19 @@ from django.db.models import Q
 from .forms import GenerateForm
 from .models import GithubRun
 from PIL import Image
-from urllib.parse import quote
+from urllib.parse import quote, urlparse
+
+def build_public_url(genurl, protocol, host):
+    genurl = (genurl or "").strip().rstrip("/")
+    if genurl:
+        if "://" not in genurl:
+            genurl = f"{protocol}://{genurl}"
+        parsed = urlparse(genurl)
+        scheme = parsed.scheme or protocol
+        netloc = parsed.netloc or parsed.path
+        return f"{scheme}://{netloc}".rstrip("/")
+    return f"{protocol}://{host}"
+
 
 def generator_view(request):
     if request.method == 'POST':
@@ -97,13 +109,7 @@ def generator_view(request):
             if not all(char.isascii() for char in appname):
                 appname = "rustdesk"
             myuuid = str(uuid.uuid4())
-            protocol = _settings.PROTOCOL
-            host = request.get_host()
-            # --- Fix: Port in URL for setup / download-zip
-            # --- protocol = _settings.PROTOCOL
-            # --- host = request.get_host()
-            # --- full_url = f"{protocol}://{host}"
-            full_url = f"{protocol}://{host}" if _settings.GENURL else f"{_settings.PROTOCOL}://{request.get_host()}"
+            full_url = build_public_url(_settings.GENURL, _settings.PROTOCOL, request.get_host())
             try:
                 iconfile = form.cleaned_data.get('iconfile')
                 if not iconfile:

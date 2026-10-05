@@ -3,6 +3,7 @@ from unittest.mock import patch
 from django.test import SimpleTestCase
 
 from rdgenerator.forms import GenerateForm
+from rdgenerator.views import build_public_url
 from rdgenerator.versions import (
     FALLBACK_VERSIONS,
     _build_choices,
@@ -60,4 +61,24 @@ class VersionChoiceTests(SimpleTestCase):
         self.assertEqual(
             list(form.fields["version"].choices),
             [("master", "nightly"), ("1.5.0", "1.5.0"), ("1.4.9", "1.4.9")],
+        )
+
+
+class PublicUrlTests(SimpleTestCase):
+    def test_uses_genurl_with_port(self):
+        self.assertEqual(
+            build_public_url("https://ruc.clik.top:8443", "https", "localhost:8000"),
+            "https://ruc.clik.top:8443",
+        )
+
+    def test_adds_protocol_when_missing(self):
+        self.assertEqual(
+            build_public_url("ruc.clik.top:8443", "http", "localhost:8000"),
+            "http://ruc.clik.top:8443",
+        )
+
+    def test_falls_back_to_request_host(self):
+        self.assertEqual(
+            build_public_url("", "http", "ruc.clik.top"),
+            "http://ruc.clik.top",
         )
