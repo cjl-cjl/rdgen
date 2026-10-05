@@ -1,12 +1,15 @@
 from django import forms
 from PIL import Image
 
+from .versions import get_version_choices
+
+
 class GenerateForm(forms.Form):
     sh_secret_field = forms.CharField(required=False)
     #Platform
     platform = forms.ChoiceField(choices=[('windows','Windows 64Bit'),('windows-x86','Windows 32Bit'),('linux','Linux'),('android','Android'),('macos','macOS')], initial='windows')
-    version = forms.ChoiceField(choices=[('master','nightly'),('1.4.9','1.4.9'),('1.4.8','1.4.8'),('1.4.7','1.4.7'),('1.4.6','1.4.6'),('1.4.5','1.4.5'),('1.4.4','1.4.4'),('1.4.3','1.4.3'),('1.4.2','1.4.2'),('1.4.1','1.4.1'),('1.4.0','1.4.0')], initial='1.4.9')
-    help_text="'master' is the development version (nightly build) with the latest features but may be less stable"
+    version = forms.ChoiceField(choices=[])
+    VERSION_HELP_TEXT = "'master' is the development version (nightly build) with the latest features but may be less stable"
     delayFix = forms.BooleanField(initial=True, required=False)
 
     #General
@@ -84,6 +87,13 @@ class GenerateForm(forms.Form):
     #custom added features
     xOffline = forms.BooleanField(initial=False, required=False)
     removeNewVersionNotif = forms.BooleanField(initial=False, required=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        version_choices, default_version = get_version_choices()
+        self.fields['version'].choices = version_choices
+        self.fields['version'].initial = default_version
+        self.fields['version'].help_text = self.VERSION_HELP_TEXT
 
     def clean_iconfile(self):
         print("checking icon")
